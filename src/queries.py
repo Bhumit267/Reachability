@@ -265,3 +265,20 @@ def get_incident_timeline(incident_id: str, graph: Optional[Graph] = None) -> Op
             )
     events.sort(key=lambda e: e.timestamp)
     return IncidentTimeline(incident_id=str(r[0]), title=str(r[1]), service=str(r[2]), events=events)
+
+
+def link_memory_episode(
+    episode_id: str, service_name: str, incident_id: Optional[str] = None, graph: Optional[Graph] = None
+) -> None:
+    """Link a memory episode to its incident and similar past incidents affecting the same service."""
+    g = graph or get_graph()
+    if incident_id:
+        cypher_inc = "MATCH (inc:Incident), (m:MemoryEpisode {id: $ep}) WHERE inc.id = $inc MERGE (inc)-[:REMEMBERS]->(m)"
+        g.query(cypher_inc, {"inc": incident_id, "ep": episode_id})
+    cypher_sim = (
+        "MATCH (m:MemoryEpisode {id: $ep}), (past_inc:Incident) "
+        "WHERE past_inc.service_id = $svc OR past_inc.service_id = ('svc-' + $svc) "
+        "MERGE (m)-[:SIMILAR_TO]->(past_inc)"
+    )
+    g.query(cypher_sim, {"ep": episode_id, "svc": service_name})
+
