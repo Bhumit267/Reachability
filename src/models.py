@@ -145,4 +145,19 @@ class CommanderResult(BaseModel):
     success: bool = Field(default=True, description="Overall execution status")
 
 
+class IncidentRun(BaseModel):
+    """End-to-end coordinated incident investigation, remediation, and resolution run."""
+
+    incident_id: str = Field(..., description="Unique incident identifier")
+    service: str = Field(..., description="Target service affected")
+    cve: str = Field(..., description="Target CVE identifier")
+    blast_radius: AgentResult = Field(..., description="Blast radius security agent analysis result")
+    code_impact: AgentResult = Field(..., description="Code exposure and ownership agent analysis result")
+    commander_result: CommanderResult = Field(..., description="Autonomous commander remediation execution result")
+    timeline: List[Dict[str, Any]] = Field(default_factory=list, description="Ordered chronological event timeline")
+    memory_written: Optional[str] = Field(default=None, description="Identifier of the persisted memory episode")
+    all_graph_paths: List[GraphPath] = Field(default_factory=list, description="All graph paths discovered and cited")
+
+
+
 
