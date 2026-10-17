@@ -42,6 +42,9 @@ class CodeImpact(BaseModel):
     functions: List[str] = Field(default_factory=list, description="Exposed code functions")
     owner: str = Field(..., description="Lead engineer or owner of the service")
     on_call: str = Field(..., description="Active on-call engineer or rotation")
+    path: Optional[GraphPath] = Field(
+        default=None, description="Graph path connecting service to code and ownership"
+    )
 
 
 class MemoryEpisodeModel(BaseModel):

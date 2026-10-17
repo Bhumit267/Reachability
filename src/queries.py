@@ -130,9 +130,19 @@ def get_code_impact(service_name: str, graph: Optional[Graph] = None) -> Optiona
     if not res:
         return None
     r = res[0]
+    svc, repo = str(r[0]), str(r[1])
+    files = [str(f) for f in r[2] if f]
+    functions = [str(fn) for fn in r[3] if fn]
+    owner, on_call = str(r[4]), str(r[5])
+    primary_file = files[0] if files else "unknown_file"
+    primary_fn = functions[0] if functions else "unknown_fn"
+    path = GraphPath(
+        nodes=[svc, repo, primary_file, primary_fn, owner, on_call],
+        edges=["HAS_REPO", "CONTAINS", "DEFINES", "OWNED_BY", "ON_CALL"],
+        readable=f"{svc} -[:HAS_REPO]-> {repo} -[:CONTAINS]-> {primary_file} -[:DEFINES]-> {primary_fn} -[:OWNED_BY]-> {owner} -[:ON_CALL]-> {on_call}",
+    )
     return CodeImpact(
-        service=str(r[0]), repo=str(r[1]), files=[str(f) for f in r[2] if f],
-        functions=[str(fn) for fn in r[3] if fn], owner=str(r[4]), on_call=str(r[5])
+        service=svc, repo=repo, files=files, functions=functions, owner=owner, on_call=on_call, path=path
     )
 
 
