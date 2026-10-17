@@ -1,6 +1,6 @@
 """Pydantic data models for graph queries, attack paths, and agent communication."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -118,4 +118,16 @@ class AgentResult(BaseModel):
     graph_path: Optional[GraphPath] = Field(default=None, description="Cypher-derived graph path justifying decision")
     tool_calls: List[dict] = Field(default_factory=list, description="Chronological log of tool calls")
     raw: dict = Field(default_factory=dict, description="Raw LLM payload or internal metadata")
+
+
+class ActionResult(BaseModel):
+    """Execution record for an automated incident action or runbook modification."""
+
+    action_type: str = Field(..., description="Action classification, e.g. ISOLATE_HOST")
+    target: str = Field(..., description="Action target entity, host, ticket, or engineer")
+    status: str = Field(default="SUCCESS", description="Execution status: SUCCESS or FAILED")
+    timestamp: str = Field(..., description="ISO-8601 timestamp of execution")
+    log_line: str = Field(..., description="Human-readable audit log message")
+    details: Dict[str, Any] = Field(default_factory=dict, description="Supplemental action parameters")
+
 

@@ -282,3 +282,17 @@ def link_memory_episode(
     )
     g.query(cypher_sim, {"ep": episode_id, "svc": service_name})
 
+
+def record_incident_action(
+    incident_id: str, action_type: str, target: str, status: str, log_line: str, graph: Optional[Graph] = None
+) -> str:
+    """Persist an Action node and attach it to an Incident node in FalkorDB."""
+    import uuid
+    g = graph or get_graph()
+    act_id = f"act-{uuid.uuid4().hex[:8]}"
+    cypher = (
+        "MERGE (a:Action {id: $aid}) SET a.type = $type, a.target = $target, a.status = $status, a.log = $log "
+        "WITH a MATCH (i:Incident) WHERE i.id = $iid OR i.id = ('inc-' + $iid) MERGE (i)-[:HAS_ACTION]->(a)"
+    )
+    g.query(cypher, {"aid": act_id, "type": action_type, "target": target, "status": status, "log": log_line, "iid": incident_id})
+    return act_id
