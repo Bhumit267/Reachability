@@ -128,7 +128,7 @@ class CommanderAgent(BaseAgent):
         executed_action_names: List[str] = []
 
         # Step 1: Security blast-radius analysis
-        attack_paths = find_attack_paths(service)
+        attack_paths = find_attack_paths(service_name=service, cve_id=cve)
         affected_assets = get_affected_assets(service)
         cve_assessments = rank_cves_by_reachability(service)
 
@@ -141,9 +141,17 @@ class CommanderAgent(BaseAgent):
                 success=False,
             )
 
+        if not attack_paths or not attack_paths[0].path:
+            return CommanderResult(
+                incident_id=incident_id, service=service, cve=cve,
+                summary=f"Aborted: No traversable attack path to Crown Jewels found for {cve} on {service}.",
+                action_timeline=tl.to_list(), graph_paths=[],
+                memory_influence="None: no threat reachability detected.",
+                success=False,
+            )
+
         primary_asset = affected_assets[0]
-        if attack_paths and attack_paths[0].path:
-            cited_graph_paths.append(attack_paths[0].path)
+        cited_graph_paths.append(attack_paths[0].path)
 
         # Step 2: Code impact and ownership mapping
         code_impact = get_code_impact(service)

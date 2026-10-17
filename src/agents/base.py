@@ -164,6 +164,16 @@ class BaseAgent:
                         raw={"final_content": content, "error": "NO_GRAPH_PATH_JUSTIFICATION"},
                     )
 
+                target_service = context.get("service") if isinstance(context, dict) else None
+                if target_service and (target_service not in observed_graph_path.nodes and target_service not in observed_graph_path.readable):
+                    return AgentResult(
+                        success=False,
+                        answer=f"Error: Decision rejected. Graph path does not substantiate service '{target_service}'.",
+                        graph_path=None,
+                        tool_calls=logged_calls,
+                        raw={"final_content": content, "error": "UNGROUNDED_GRAPH_PATH"},
+                    )
+
                 return AgentResult(
                     success=True,
                     answer=final_answer,

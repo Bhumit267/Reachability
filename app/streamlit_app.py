@@ -13,16 +13,18 @@ import streamlit as st
 
 from src.models import GraphPath, IncidentRun
 from src.orchestrator import run_incident
-from src.queries import get_all_cves, get_all_services
+from src.queries import get_all_cves, get_all_services, get_cves_for_service
 from src.schema import reset_graph
 
 st.set_page_config(page_title="CVE Commander · Reachability", layout="wide", initial_sidebar_state="collapsed")
 
 
 def format_arrow_path(path: GraphPath) -> str:
-    """Format a GraphPath into a standard node -> EDGE -> node sequence."""
+    """Format a GraphPath into a standard readable sequence."""
     if not path or not path.nodes:
         return path.readable if path else "No path recorded"
+    if "→" in path.readable or "<-" in path.readable:
+        return path.readable
     elements: List[str] = []
     for i, edge in enumerate(path.edges):
         node = path.nodes[i] if i < len(path.nodes) else "?"
@@ -54,9 +56,11 @@ col_control, col_timeline, col_evidence = st.columns([1, 1.2, 1.3], gap="medium"
 with col_control:
     st.subheader("⚡ Incident Control")
     services = get_all_services()
-    cves = get_all_cves()
-
     selected_service = st.selectbox("Target Service", options=services, index=0 if services else 0)
+
+    # Dynamically scope CVEs to the chosen service
+    service_cves = get_cves_for_service(selected_service)
+    cves = service_cves if service_cves else get_all_cves()
     selected_cve = st.selectbox("Target Vulnerability", options=cves, index=0 if cves else 0)
 
     if st.button("🚀 Run Incident", type="primary", use_container_width=True):
@@ -66,10 +70,13 @@ with col_control:
 
     if "incident_run" in st.session_state:
         run: IncidentRun = st.session_state["incident_run"]
-        st.success(f"Incident `{run.incident_id}` Contained")
+        if run.status == "contained":
+            st.success(f"Incident `{run.incident_id}` Contained")
+        else:
+            st.error(f"Incident `{run.incident_id}`: Failed / Escalated")
         st.markdown(f"**Service:** `{run.service}`")
         st.markdown(f"**CVE:** `{run.cve}`")
-        st.markdown(f"**Status:** `CONTAINED`")
+        st.markdown(f"**Status:** `{run.status.upper()}`")
         if run.memory_written:
             st.markdown(f"**Persisted Memory:** `{run.memory_written}`")
 

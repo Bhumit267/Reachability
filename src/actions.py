@@ -57,7 +57,7 @@ def isolate_host(
     )
     (timeline or default_timeline).add(result)
     if incident_id:
-        result.details["action_id"] = record_incident_action(incident_id, "ISOLATE_HOST", asset, "SUCCESS", log_line)
+        result.details["action_id"] = record_incident_action(incident_id, "ISOLATE_HOST", asset, "SUCCESS", log_line, timestamp=ts)
     return result
 
 
@@ -78,7 +78,7 @@ def open_ticket(
     )
     (timeline or default_timeline).add(result)
     if incident_id:
-        result.details["action_id"] = record_incident_action(incident_id, "OPEN_TICKET", ticket_key, "SUCCESS", log_line)
+        result.details["action_id"] = record_incident_action(incident_id, "OPEN_TICKET", ticket_key, "SUCCESS", log_line, timestamp=ts)
     return result
 
 
@@ -98,7 +98,7 @@ def page_on_call(
     )
     (timeline or default_timeline).add(result)
     if incident_id:
-        result.details["action_id"] = record_incident_action(incident_id, "PAGE_ONCALL", person, "SUCCESS", log_line)
+        result.details["action_id"] = record_incident_action(incident_id, "PAGE_ONCALL", person, "SUCCESS", log_line, timestamp=ts)
     return result
 
 
@@ -117,7 +117,7 @@ def start_runbook_step(
         details={"step_name": step_name, "incident_id": incident_id},
     )
     (timeline or default_timeline).add(result)
-    result.details["action_id"] = record_incident_action(incident_id, "START_RUNBOOK_STEP", step_name, "SUCCESS", log_line)
+    result.details["action_id"] = record_incident_action(incident_id, "START_RUNBOOK_STEP", step_name, "SUCCESS", log_line, timestamp=ts)
     return result
 
 
@@ -136,7 +136,7 @@ def switch_runbook_step(
         details={"from_step": from_step, "to_step": to_step, "reason": reason, "incident_id": incident_id},
     )
     (timeline or default_timeline).add(result)
-    result.details["action_id"] = record_incident_action(incident_id, "SWITCH_RUNBOOK_STEP", to_step, "SUCCESS", log_line)
+    result.details["action_id"] = record_incident_action(incident_id, "SWITCH_RUNBOOK_STEP", to_step, "SUCCESS", log_line, timestamp=ts)
     return result
 
 
@@ -155,5 +155,5 @@ def post_incident_update(
         details={"incident_id": incident_id, "message": message},
     )
     (timeline or default_timeline).add(result)
-    result.details["action_id"] = record_incident_action(incident_id, "POST_UPDATE", incident_id, "SUCCESS", log_line)
+    result.details["action_id"] = record_incident_action(incident_id, "POST_UPDATE", incident_id, "SUCCESS", log_line, timestamp=ts)
     return result

@@ -155,8 +155,10 @@ class IncidentRun(BaseModel):
     code_impact: AgentResult = Field(..., description="Code exposure and ownership agent analysis result")
     commander_result: CommanderResult = Field(..., description="Autonomous commander remediation execution result")
     timeline: List[Dict[str, Any]] = Field(default_factory=list, description="Ordered chronological event timeline")
+    status: str = Field(default="contained", description="Final incident status: contained or failed")
     memory_written: Optional[str] = Field(default=None, description="Identifier of the persisted memory episode")
     all_graph_paths: List[GraphPath] = Field(default_factory=list, description="All graph paths discovered and cited")
+
 
 
 

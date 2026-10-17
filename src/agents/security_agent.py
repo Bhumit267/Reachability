@@ -52,7 +52,8 @@ class SecurityAgent(BaseAgent):
             parameters={
                 "type": "object",
                 "properties": {
-                    "service": {"type": "string", "description": "Canonical service name, e.g. payments-api"}
+                    "service": {"type": "string", "description": "Canonical service name, e.g. payments-api"},
+                    "cve": {"type": "string", "description": "Specific CVE ID to filter by, e.g. CVE-2024-3094"},
                 },
                 "required": ["service"],
             },
@@ -83,11 +84,11 @@ class SecurityAgent(BaseAgent):
         )
 
     def _tool_find_attack_paths(
-        self, service: Optional[str] = None, service_name: Optional[str] = None
+        self, service: Optional[str] = None, service_name: Optional[str] = None, cve: Optional[str] = None
     ) -> List[AttackPath]:
-        """Wrap find_attack_paths handling service parameter aliases."""
+        """Wrap find_attack_paths handling service parameter aliases and optional CVE scope."""
         target = (service or service_name or "").strip()
-        return find_attack_paths(target)
+        return find_attack_paths(service_name=target, cve_id=cve)
 
     def _tool_rank_cves(
         self, service: Optional[str] = None, service_name: Optional[str] = None
