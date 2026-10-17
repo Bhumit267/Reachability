@@ -96,3 +96,23 @@ class IncidentTimeline(BaseModel):
     title: str = Field(..., description="Incident title")
     service: str = Field(..., description="Affected service")
     events: List[TimelineEvent] = Field(default_factory=list, description="Chronological incident events")
+
+
+class ToolCallRecord(BaseModel):
+    """Log record of an individual tool execution by an agent."""
+
+    name: str = Field(..., description="Name of the invoked tool")
+    args: dict = Field(default_factory=dict, description="Arguments passed to the tool")
+    result_summary: str = Field(..., description="Summary of the tool output")
+    timestamp: str = Field(..., description="ISO-8601 execution timestamp")
+
+
+class AgentResult(BaseModel):
+    """Structured output returned by an agent execution."""
+
+    success: bool = Field(default=True, description="Whether execution succeeded with valid graph path")
+    answer: str = Field(..., description="Final response or decision")
+    graph_path: Optional[GraphPath] = Field(default=None, description="Cypher-derived graph path justifying decision")
+    tool_calls: List[dict] = Field(default_factory=list, description="Chronological log of tool calls")
+    raw: dict = Field(default_factory=dict, description="Raw LLM payload or internal metadata")
+
