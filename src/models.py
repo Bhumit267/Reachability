@@ -131,3 +131,18 @@ class ActionResult(BaseModel):
     details: Dict[str, Any] = Field(default_factory=dict, description="Supplemental action parameters")
 
 
+class CommanderResult(BaseModel):
+    """Aggregated incident command result including timeline, paths, and memory influence."""
+
+    incident_id: str = Field(..., description="Incident identifier")
+    service: str = Field(..., description="Target service affected")
+    cve: str = Field(..., description="Target CVE identifier")
+    summary: str = Field(..., description="Incident command summary")
+    action_timeline: List[Dict[str, Any]] = Field(default_factory=list, description="Chronological action timeline")
+    graph_paths: List[GraphPath] = Field(default_factory=list, description="All graph paths justifying decisions")
+    memory_influence: str = Field(..., description="Detailed explanation of memory recall influence")
+    episode_id: Optional[str] = Field(default=None, description="Persisted incident memory episode identifier")
+    success: bool = Field(default=True, description="Overall execution status")
+
+
+
