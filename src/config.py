@@ -11,9 +11,10 @@ class Settings(BaseSettings):
     falkordb_host: str = Field(default="localhost", alias="FALKORDB_HOST")
     falkordb_port: int = Field(default=6379, alias="FALKORDB_PORT")
     falkordb_graph: str = Field(default="cve_commander", alias="FALKORDB_GRAPH")
-    llm_provider: str = Field(default="openai", alias="LLM_PROVIDER")
-    llm_model: str = Field(default="gpt-4o", alias="LLM_MODEL")
+    llm_provider: str = Field(default="ollama", alias="LLM_PROVIDER")
+    llm_model: str = Field(default="llama3.2", alias="LLM_MODEL")
     llm_api_key: str = Field(default="", alias="LLM_API_KEY")
+    llm_base_url: str = Field(default="http://localhost:11434/v1", alias="LLM_BASE_URL")
 
     model_config = SettingsConfigDict(
         env_file=".env",
