@@ -1,6 +1,14 @@
 """Streamlit web dashboard for autonomous CVE incident command and graph reachability."""
 
+import sys
+from pathlib import Path
 from typing import List
+
+# Ensure project root is in sys.path when running via streamlit run
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 import streamlit as st
 
 from src.models import GraphPath, IncidentRun
